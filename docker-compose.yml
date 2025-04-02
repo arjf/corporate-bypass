@@ -33,7 +33,7 @@ services:
     depends_on:
       - wireguard
     networks:
-      - internal-network
+      - internal-net
 
   nginx:
     image: nginx:alpine
@@ -51,7 +51,7 @@ services:
     depends_on:
       - wstunnel
     networks:
-      - internal-network
+      - internal-net
 
   certbot:
     image: certbot/certbot
@@ -61,8 +61,8 @@ services:
       - $vols/certbot/conf:/etc/letsencrypt
     entrypoint: "/bin/sh -c 'trap exit TERM; while :; do certbot renew; sleep 12h & wait $${!}; done;'"
     networks:
-      - internal-network
+      - internal-net
 
 networks:
-  internal-network:
+  internal-net:
     driver: bridge
