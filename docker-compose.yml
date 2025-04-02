@@ -1,0 +1,68 @@
+services:
+  wireguard: # Dont change this the wstunnel restriction depends on this name.
+    image: linuxserver/wireguard
+    container_name: wireguard
+    cap_add:
+      - NET_ADMIN
+      - SYS_MODULE
+    environment:
+      - PUID=${PUID:?err}
+      - PGID=${PGID:?err}
+      - TZ=${TIMEZONE:UTC}
+      - SERVERURL=${EXTERNAL_URL:?err}
+      - SERVERPORT=51820
+      - PEERS=${WG_CLIENTS:5}
+      - PEERDNS=${WG_DNS:1.1.1.1}
+      - INTERNAL_SUBNET=${WG_SUBNET:10.13.13.0}
+      - ALLOWEDIPS=${WG_ALLOWED:0.0.0.0/0}
+    volumes:
+      - $vols/wireguard/config:/config
+      - /lib/modules:/lib/modules
+    sysctls:
+      - net.ipv4.conf.all.src_valid_mark=1
+      - net.ipv4.ip_forward=1
+    restart: always
+    networks:
+      - internal-net
+
+  wstunnel: # Dont change this the nginx conf depends on this
+    image: ghcr.io/erebe/wstunnel:latest
+    container_name: wstunnel
+    command: /bin/sh -c "exec /home/app/wstunnel server --restrict-to=wireguard:51820 ws://0.0.0.0:8080"
+    restart: always
+    depends_on:
+      - wireguard
+    networks:
+      - internal-network
+
+  nginx:
+    image: nginx:alpine
+    container_name: nginx
+    ports:
+      - "80:80"
+      - "443:443"
+    volumes:
+      - $vols/nginx/conf:/etc/nginx/conf.d
+      - $vols/nginx/html:/usr/share/nginx/html
+      - $vols/certbot/www:/var/www/certbot
+      - $vols/certbot/conf:/etc/letsencrypt
+      - $vols/nginx/entrypoints:/docker-entrypoint.d/
+    restart: always
+    depends_on:
+      - wstunnel
+    networks:
+      - internal-network
+
+  certbot:
+    image: certbot/certbot
+    container_name: certbot
+    volumes:
+      - $vols/certbot/www:/var/www/certbot
+      - $vols/certbot/conf:/etc/letsencrypt
+    entrypoint: "/bin/sh -c 'trap exit TERM; while :; do certbot renew; sleep 12h & wait $${!}; done;'"
+    networks:
+      - internal-network
+
+networks:
+  internal-network:
+    driver: bridge
