@@ -38,13 +38,18 @@ if ! docker compose version >/dev/null 2>&1; then
 fi
 
 # Check if required files exist
-if [ ! -f nginx/funnel.conf ]; then
-    echo "Error: nginx/funnel.conf missing"
+if [ ! -f nginx/funnel.conf.template ]; then
+    echo "Error: nginx/funnel.conf.template missing"
     exit 1
 fi
 
 if [ ! -f nginx/99-autoreload.sh ]; then
     echo "Error: nginx/99-autoreload.sh missing"
+    exit 1
+fi
+
+if [ ! -f nginx/98-envsubst.sh ]; then
+    echo "Error: nginx/98-envsubst.sh missing"
     exit 1
 fi
 
@@ -54,9 +59,11 @@ mkdir -p "$vols/certbot/www"
 mkdir -p "$vols/certbot/conf"
 mkdir -p "$vols/nginx/entrypoints"
 mkdir -p "$vols/nginx/conf"
-cp nginx/funnel.conf "$vols/nginx/conf/"
+cp nginx/funnel.conf.template "$vols/nginx/conf/"
 cp nginx/99-autoreload.sh "$vols/nginx/entrypoints/"
+cp nginx/99-envsubst.sh "$vols/nginx/entrypoints/"
 chmod +x "$vols/nginx/entrypoints/99-autoreload.sh"
+chmod +x "$vols/nginx/entrypoints/99-envsubst.sh"
 
 # If single domain set array to single doamin
 if [ -z "$domains" ]; then
