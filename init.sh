@@ -63,7 +63,7 @@ cp nginx/funnel.conf.template "$vols/nginx/conf/"
 cp nginx/99-autoreload.sh "$vols/nginx/entrypoints/"
 cp nginx/98-envsubst.sh "$vols/nginx/entrypoints/"
 chmod +x "$vols/nginx/entrypoints/99-autoreload.sh"
-chmod +x "$vols/nginx/entrypoints/99-envsubst.sh"
+chmod +x "$vols/nginx/entrypoints/98-envsubst.sh"
 
 # If single domain set array to single doamin
 if [ -z "$domains" ]; then
