@@ -8,13 +8,13 @@ services:
     environment:
       - PUID=${PUID:?err}
       - PGID=${PGID:?err}
-      - TZ=${TIMEZONE:UTC}
+      - TZ=${TIMEZONE:-UTC}
       - SERVERURL=${EXTERNAL_URL:?err}
       - SERVERPORT=51820
-      - PEERS=${WG_CLIENTS:5}
-      - PEERDNS=${WG_DNS:1.1.1.1}
-      - INTERNAL_SUBNET=${WG_SUBNET:10.13.13.0}
-      - ALLOWEDIPS=${WG_ALLOWED:0.0.0.0/0}
+      - PEERS=${WG_CLIENTS:-5}
+      - PEERDNS=${WG_DNS:-1.1.1.1}
+      - INTERNAL_SUBNET=${WG_SUBNET:-10.13.13.0}
+      - ALLOWEDIPS=${WG_ALLOWED:-0.0.0.0/0}
     volumes:
       - $vols/wireguard/config:/config
       - /lib/modules:/lib/modules
