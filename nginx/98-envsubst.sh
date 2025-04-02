@@ -1,2 +1,2 @@
-envsubst '${DOMAIN}' < /etc/nginx/conf/funnel.conf.template > /etc/nginx/conf/funnel.conf
+envsubst '${DOMAIN}' < /etc/nginx/conf.d/funnel.conf.template > /etc/nginx/conf.d/funnel.conf
 nginx -g 'daemon off;'
