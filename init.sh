@@ -61,7 +61,7 @@ mkdir -p "$vols/nginx/entrypoints"
 mkdir -p "$vols/nginx/conf"
 cp nginx/funnel.conf.template "$vols/nginx/conf/"
 cp nginx/99-autoreload.sh "$vols/nginx/entrypoints/"
-cp nginx/99-envsubst.sh "$vols/nginx/entrypoints/"
+cp nginx/98-envsubst.sh "$vols/nginx/entrypoints/"
 chmod +x "$vols/nginx/entrypoints/99-autoreload.sh"
 chmod +x "$vols/nginx/entrypoints/99-envsubst.sh"
 
